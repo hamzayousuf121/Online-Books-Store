@@ -1,30 +1,40 @@
-<!--Start header-scripts-->
-	<?php require 'db.php'; ?>
+
+	<?php 
+	session_start();
+	if(isset($_GET['logout'])){
+		session_unset();
+		session_destroy();
+	}
+	require 'db.php'; ?>
 	<?php include 'functions.php'; ?>
 	<?php include 'header.php'; ?>
 	<?php 
 		$query = mysqli_query($con,"SELECT status FROM users where id='1'");
 		
 	?>
-<!--End header-scripts-->
+
 <?php
 	$verificationMsg = "";
-	// Login process
+
 	if(isset($_POST['submit']))
 	{
 		 $emailInp = mysqli_real_escape_string($con, $_POST['email']);
+			if (!filter_var($emailInp, FILTER_VALIDATE_EMAIL)) {
+			exit('Invalid email format');
+			}
 		 $passwordInp = mysqli_real_escape_string($con, $_POST['password']);
-		$login_params = array($emailInp, $passwordInp);
-		$postStatus = checkEmpty($login_params);
+		$loginParameter = array($emailInp, $passwordInp);
+		$postStatus = checkEmpty($loginParameter);
 		$passwordInp = md5($passwordInp);
 		
 		if($postStatus)
 		{
-			$loginUserResult = mysqli_query($con, "Select id, email, password from users where email='$emailInp' AND password='$passwordInp'");
+			$loginUserResult = mysqli_query($con, "Select email, password from users where email='$emailInp' AND password='$passwordInp'");
 			
 			if(mysqli_num_rows($loginUserResult))
 			{
 				$logedInUserrecord = mysqli_fetch_array($loginUserResult);
+				$_SESSION['logedin'] = true;
 				header('Location: dashboard.php');
 			}
 			else{ $verificationMsg = "<h1>Your email or password is incorrect! Try again</h1>"; }
@@ -63,6 +73,7 @@
 			}
 		}
 	}
+
 	// Verification end
 ?>
 		<center><?php 
@@ -87,10 +98,10 @@
 
 		<form class="details" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>">
 				<div class="input-container">
-						<input name="email" class="col-sm-12 myname text-input with-placeholder" id="email" type="email" placeholder="Your email" />
+						<input name="email" required class="col-sm-12 myname text-input with-placeholder" id="email" type="email" placeholder="Your email" />
 				</div>
 				<div class="input-container">
-						<input name="password" class="col-sm-12 email-input with-placeholder" id="password" type="password" placeholder="password" />
+						<input name="password" required class="col-sm-12 email-input with-placeholder" id="password" type="password" placeholder="password" />
 				</div>
 				<input name="submit" class="btn btn-danger waves-effect" type="submit" value="Log in">
 				<?php while($statusCheck = mysqli_fetch_array($query)){ 
@@ -100,6 +111,7 @@
 					</a>
 					<?php } 
 				}
+			
 				?>
 	</form>
 </div>
