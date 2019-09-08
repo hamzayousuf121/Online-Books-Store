@@ -1,6 +1,12 @@
-<?php session_start();
-if(isset($_GET['logout'], $_SESSION['user_id'])){ session_destroy(); }
-		if(isset($_SESSION['user_id'])){ header('Location: index.php'); }
+
+<?php 
+    session_start(); 
+		if(isset($_GET['logout'], $_GET['dashboard.php'])){ 
+    header("location: login.php");
+    session_unset();
+		session_destroy();
+		}
+		if($_SESSION['logedin']){
 	?>
 <?php include "functions.php";?>
 <?php require "db.php";?>
@@ -48,6 +54,7 @@ if(isset($_POST['submit'])){
 		}
 	}
 }
+
 $query = "SELECT * from Users where id='1'";
 $result = mysqli_query($con, $query);
 $user = mysqli_fetch_array($result);
@@ -71,8 +78,7 @@ $user = mysqli_fetch_array($result);
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
   <link href="css/mystyle.css" rel="stylesheet">
   <!-- Custom fonts for this template-->
-  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-</head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></head>
     <body id="page-top">
 
         <!-- Page Wrapper -->
@@ -183,7 +189,7 @@ $user = mysqli_fetch_array($result);
                 </a>
                 
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="https://localhost/project/index.php?logout='logout'" data-toggle="modal" data-target="#logoutModal">
+                <a class="dropdown-item" href="https://localhost/project/login.php?logout='logout'" data-toggle="modal" data-target="#logoutModal">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   Logout
                 </a>
@@ -200,7 +206,7 @@ $user = mysqli_fetch_array($result);
                 <!-- Page Heading -->
                 <h1 class="h3 mb-4 text-gray-800">
 				Book Store Dashboard</h1>
-      
+    
               </div>
               <!-- /.container-fluid -->
       <div class="container-fluid">
@@ -247,14 +253,19 @@ $user = mysqli_fetch_array($result);
       
         <!-- Bootstrap core JavaScript-->
         <script src="js/custom.js"></script>
-        <script src="vendor/jquery/jquery.min.js"></script>
-        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="js/jquery.min.js"></script>
 		
         <!-- Core plugin JavaScript-->
-        <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+        <script src="jquery.easing.min.js"></script>
       
         <!-- Custom scripts for all pages-->
         <script src="js/sb-admin-2.min.js"></script>
       </body>
 </body>
 </html>
+<?php
+      }
+else{
+  header('location: index.php');
+}
+?>
